@@ -13,7 +13,7 @@ function MainContainer({ searchTerm = '', selectedFilter = 'all', onSearch, onFi
   const [loadingMore, setLoadingMore] = useState(false);
 
   // API Base URL - adjust this to your backend URL
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com';
 
   // Fetch items from API
   const fetchItems = async (page = 1, append = false) => {

@@ -22,7 +22,7 @@ function UploadPage({ onBack }) {
   const [phoneError, setPhoneError] = useState('');
 
   // API Base URL - adjust this to your backend URL
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com';
 
   // Kenyan locations for dropdown
   const kenyanCities = [
@@ -484,7 +484,7 @@ function UploadPage({ onBack }) {
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="John Doe"
+                  placeholder="Enter name here"
                 />
               </div>
 

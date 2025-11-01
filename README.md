@@ -201,3 +201,4 @@ React Router for seamless navigation
 
 
 # BlackVendors-Backend
+# BaraSpot-2.0-Version-Backend

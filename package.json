@@ -7,8 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
   },
+  "homepage": "https://geeksjayjay388.github.io/BaraSpot-2.0-Version",
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
     "lucide-react": "^0.544.0",

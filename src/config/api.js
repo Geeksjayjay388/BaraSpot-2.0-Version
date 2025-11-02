@@ -2,7 +2,7 @@
 // Centralized API configuration and helper functions
 
 // API Base URL - Change this to your backend URL
-export const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com/api';  // ADDED /api HERE!
+export const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com/api'; // ADDED /api HERE!
 
 // API Endpoints
 export const ENDPOINTS = {

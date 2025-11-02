@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist"
   },
-  "homepage": "https://geeksjayjay388.github.io/BaraSpot-2.0-Version",
+  "homepage": "https://bara-spot-2-0-version.vercel.app/",
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
     "lucide-react": "^0.544.0",

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, MapPin, Star, X, Phone, MessageCircle, Calendar, Package, Search, Filter, Loader, AlertCircle, RefreshCw } from 'lucide-react';
+// 
+import { fetchItems as apiFetchItems, toggleItemLike } from '../config/api';
 
 function MainContainer({ searchTerm = '', selectedFilter = 'all', onSearch, onFilterChange }) {
   const [items, setItems] = useState([]);
@@ -12,29 +14,22 @@ function MainContainer({ searchTerm = '', selectedFilter = 'all', onSearch, onFi
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loadingMore, setLoadingMore] = useState(false);
 
-  // API Base URL - adjust this to your backend URL
-  const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com';
+  // REMOVE THIS LINE - No longer needed
+  // const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com';
 
-  // Fetch items from API
+  // REPLACE THE ENTIRE fetchItems FUNCTION
   const fetchItems = async (page = 1, append = false) => {
     try {
       if (!append) setLoading(true);
       else setLoadingMore(true);
 
-      const params = new URLSearchParams({
+      // Use the API helper function
+      const data = await apiFetchItems({
         search: searchInput,
         condition: currentFilter === 'all' ? '' : currentFilter,
-        page: page.toString(),
-        limit: '12'
+        page: page,
+        limit: 12
       });
-
-      const response = await fetch(`${API_BASE}/items?${params}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch items: ${response.status}`);
-      }
-      
-      const data = await response.json();
       
       if (data.success) {
         if (append) {
@@ -57,21 +52,11 @@ function MainContainer({ searchTerm = '', selectedFilter = 'all', onSearch, onFi
     }
   };
 
-  // Toggle like functionality
+  // REPLACE THE toggleLike FUNCTION
   const toggleLike = async (itemId) => {
     try {
-      const response = await fetch(`${API_BASE}/items/${itemId}/like`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to toggle like');
-      }
-      
-      const data = await response.json();
+      // Use the API helper function
+      const data = await toggleItemLike(itemId);
       
       if (data.success) {
         // Update items state

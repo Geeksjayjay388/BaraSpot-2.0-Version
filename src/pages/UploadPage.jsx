@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Upload, X, Camera, Package, User, ArrowLeft, Check, AlertCircle, Loader } from 'lucide-react';
+// ADD THIS IMPORT
+import { createItem } from '../config/api';
 
 function UploadPage({ onBack }) {
   const [formData, setFormData] = useState({
@@ -21,8 +23,8 @@ function UploadPage({ onBack }) {
   const [error, setError] = useState(null);
   const [phoneError, setPhoneError] = useState('');
 
-  // API Base URL - adjust this to your backend URL
-  const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com';
+  // REMOVE THIS LINE - No longer needed
+  // const API_BASE = 'https://baraspot-2-0-version-backend.onrender.com';
 
   // Kenyan locations for dropdown
   const kenyanCities = [
@@ -180,17 +182,8 @@ function UploadPage({ onBack }) {
         submitData.append('images', image.file);
       });
 
-      // Submit to API
-      const response = await fetch(`${API_BASE}/items`, {
-        method: 'POST',
-        body: submitData
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to post item');
-      }
+      // REPLACE THIS SECTION - Use the API helper function
+      const result = await createItem(submitData);
 
       if (result.success) {
         setIsSuccess(true);

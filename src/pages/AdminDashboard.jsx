@@ -22,29 +22,41 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
       navigate('/admin/login');
+    } else {
+      fetchData();
     }
-    fetchData();
   }, [navigate]);
 
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('adminToken');
       
-      // Fetch items
+      console.log('Fetching items...');
+      
+      // Fetch items (no auth required based on your server.js)
       const itemsResponse = await fetch(
-        'https://baraspot-2-0-version-backend.onrender.com/api/items',
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
+        'https://baraspot-2-0-version-backend.onrender.com/api/items'
       );
       
-      if (!itemsResponse.ok) throw new Error('Failed to fetch items');
+      console.log('Items response status:', itemsResponse.status);
+      
+      if (!itemsResponse.ok) {
+        throw new Error(`Failed to fetch items: ${itemsResponse.status}`);
+      }
+      
       const itemsData = await itemsResponse.json();
-      setItems(itemsData.data.items || []);
+      console.log('Items data:', itemsData);
+      
+      if (itemsData.success && itemsData.data?.items) {
+        setItems(itemsData.data.items);
+        console.log('Items set:', itemsData.data.items.length);
+      } else {
+        console.warn('No items in response:', itemsData);
+        setItems([]);
+      }
 
-      // Fetch stats
+      // Fetch admin stats (requires auth)
+      console.log('Fetching stats...');
       const statsResponse = await fetch(
         'https://baraspot-2-0-version-backend.onrender.com/api/admin/stats',
         {
@@ -54,14 +66,21 @@ const AdminDashboard = () => {
         }
       );
       
+      console.log('Stats response status:', statsResponse.status);
+      
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
-        setStats(statsData.data);
+        console.log('Stats data:', statsData);
+        if (statsData.success) {
+          setStats(statsData.data);
+        }
+      } else {
+        console.warn('Stats fetch failed:', statsResponse.status);
       }
 
     } catch (error) {
-      setError(error.message);
       console.error('Error fetching data:', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -195,10 +214,17 @@ const AdminDashboard = () => {
           </div>
         )}
 
+        {/* Debug Info (Remove in production) */}
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-6">
+          <p className="text-sm">
+            <strong>Debug:</strong> Found {items.length} items. Check browser console (F12) for details.
+          </p>
+        </div>
+
         {/* Items Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">All Items</h2>
+            <h2 className="text-lg font-semibold text-gray-900">All Items ({items.length})</h2>
           </div>
 
           <div className="overflow-x-auto">
@@ -232,7 +258,9 @@ const AdminDashboard = () => {
                 {items.length === 0 ? (
                   <tr>
                     <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
-                      No items found
+                      <Package className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                      <p className="text-lg font-medium">No items found</p>
+                      <p className="text-sm mt-1">Try adding some items to your marketplace</p>
                     </td>
                   </tr>
                 ) : (
@@ -246,7 +274,9 @@ const AdminDashboard = () => {
                             className="h-12 w-12 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="h-12 w-12 bg-gray-200 rounded-lg" />
+                          <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <Package className="w-6 h-6 text-gray-400" />
+                          </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

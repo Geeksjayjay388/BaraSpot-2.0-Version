@@ -47,13 +47,16 @@ const AdminDashboard = () => {
       const itemsData = await itemsResponse.json();
       console.log('Items data:', itemsData);
       
-      if (itemsData.success && itemsData.data?.items) {
-        setItems(itemsData.data.items);
-        console.log('Items set:', itemsData.data.items.length);
-      } else {
-        console.warn('No items in response:', itemsData);
-        setItems([]);
+      // Handle different response structures
+      let itemsArray = [];
+      if (itemsData.success) {
+        // Try data.items first, then items directly
+        itemsArray = itemsData.data || itemsData.items || [];
       }
+      
+      console.log('Items array:', itemsArray);
+      setItems(itemsArray);
+      console.log('Items set:', itemsArray.length);
 
       // Fetch admin stats (requires auth)
       console.log('Fetching stats...');
@@ -93,30 +96,42 @@ const AdminDashboard = () => {
   };
 
   const handleDelete = async (itemId) => {
-    if (!confirm('Are you sure you want to delete this item?')) return;
+  if (!confirm('Are you sure you want to delete this item?')) return;
 
-    try {
-      const token = localStorage.getItem('adminToken');
-      const response = await fetch(
-        `https://baraspot-2-0-version-backend.onrender.com/api/items/${itemId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+  try {
+    const token = localStorage.getItem('adminToken');
+    
+    console.log('Deleting item:', itemId); // Debug log
+    
+    const response = await fetch(
+      `https://baraspot-2-0-version-backend.onrender.com/api/items/${itemId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
         }
-      );
+      }
+    );
 
-      if (!response.ok) throw new Error('Failed to delete item');
+    console.log('Delete response status:', response.status); // Debug log
+    
+    const data = await response.json();
+    console.log('Delete response data:', data); // Debug log
 
-      // Refresh items
-      setItems(items.filter(item => item._id !== itemId));
-      alert('Item deleted successfully!');
-
-    } catch (error) {
-      alert('Error deleting item: ' + error.message);
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to delete item');
     }
-  };
+
+    // Refresh items
+    setItems(items.filter(item => item.id !== itemId));
+    alert('Item deleted successfully!');
+
+  } catch (error) {
+    console.error('Delete error:', error); // Debug log
+    alert('Error deleting item: ' + error.message);
+  }
+};
 
   if (loading) {
     return (
@@ -137,7 +152,7 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-sm text-gray-600">Manage your BaraSpot marketplace</p>
+              <p className="text-sm text-gray-600">Manage Black Vendors</p>
             </div>
             <button
               onClick={handleLogout}
@@ -288,7 +303,7 @@ const AdminDashboard = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        KSh {item.price?.toLocaleString()}
+                         {item.price?.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {item.location}
@@ -304,15 +319,9 @@ const AdminDashboard = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end gap-2">
+                          
                           <button
-                            onClick={() => navigate(`/item/${item._id}`)}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="View"
-                          >
-                            <Eye className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item._id)}
+                            onClick={() => handleDelete(item.id)}
                             className="text-red-600 hover:text-red-900"
                             title="Delete"
                           >

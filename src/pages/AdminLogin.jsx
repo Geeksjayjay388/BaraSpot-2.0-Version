@@ -1,7 +1,3 @@
-// ===========================
-// FILE LOCATION: src/pages/AdminLogin.jsx
-// DESCRIPTION: Admin login page
-// ===========================
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
